@@ -50,7 +50,7 @@ const router = createBrowserRouter([
 ]);
 
 const App: React.FC = () => {
-  useQuerySocket();
+  useQuerySocket(queryClient);
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
