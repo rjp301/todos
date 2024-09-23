@@ -11,6 +11,7 @@ import Root from "./root";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import SharedTags from "./shared-tags";
 import Header from "@/components/header";
+import useQuerySocket from "@/hooks/use-query-socket";
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 1000 * 60 * 5 } },
@@ -48,13 +49,16 @@ const router = createBrowserRouter([
   },
 ]);
 
-const App: React.FC = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <RouterProvider router={router} />
-      <Toaster />
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+const App: React.FC = () => {
+  useQuerySocket();
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <RouterProvider router={router} />
+        <Toaster />
+      </TooltipProvider>
+    </QueryClientProvider>
+  );
+};
 
 export default App;
