@@ -12,6 +12,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import SharedTags from "./shared-tags";
 import Header from "@/components/header";
 import useQueryStream from "@/hooks/use-query-stream";
+import HashtagCard from "@/components/hashtag-card";
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 1000 * 60 * 5 } },
@@ -29,7 +30,10 @@ const router = createBrowserRouter([
       <>
         <Header />
         <main className="container2">
-          <div className="pb-28 pt-6">
+          <div className="flex gap-4 pb-28 pt-6">
+            <div className="sticky top-0">
+              <HashtagCard />
+            </div>
             <Outlet />
           </div>
         </main>

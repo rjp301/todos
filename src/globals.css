@@ -79,7 +79,7 @@
     scroll-gutter: static right;
   }
   .container2 {
-    @apply mx-auto w-full max-w-md px-4 lg:max-w-xl;
+    @apply mx-auto w-full max-w-md px-4 lg:max-w-screen-md;
   }
 
   @media (pointer: coarse) {
