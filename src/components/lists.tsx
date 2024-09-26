@@ -1,12 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
 import React from "react";
 import { listsQueryOptions } from "../lib/queries";
-import { Badge, badgeVariants } from "./ui/badge";
+import { Badge } from "./ui/badge";
 import { Separator } from "./ui/separator";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
-import { Plus } from "lucide-react";
 import { useLongPress } from "react-use";
-import { cn } from "@/lib/utils";
 
 const List: React.FC<
   React.PropsWithChildren<{ link: string; noEdit?: boolean }>

@@ -14,6 +14,7 @@ import Header from "@/components/header";
 import useQueryStream from "@/hooks/use-query-stream";
 import EditList from "./edit-list";
 import AddList from "./add-list";
+import { DndContext } from "@dnd-kit/core";
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 1000 * 60 * 5 } },
@@ -70,12 +71,14 @@ const router = createBrowserRouter([
 const App: React.FC = () => {
   useQueryStream(queryClient);
   return (
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <RouterProvider router={router} />
-        <Toaster />
-      </TooltipProvider>
-    </QueryClientProvider>
+    <DndContext>
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <RouterProvider router={router} />
+          <Toaster />
+        </TooltipProvider>
+      </QueryClientProvider>
+    </DndContext>
   );
 };
 

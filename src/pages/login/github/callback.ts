@@ -2,10 +2,10 @@ import { github } from "@/lib/auth";
 import { OAuth2RequestError } from "arctic";
 
 import type { APIContext } from "astro";
-import getGithubUser from "@/lib/helpers/get-github-user";
+import getGithubUser from "@/lib/auth/get-github-user";
 import { db, eq, User } from "astro:db";
 import { v4 as uuid } from "uuid";
-import setUserSession from "@/lib/helpers/set-user-session";
+import setUserSession from "@/lib/auth/set-user-session";
 
 export async function GET(context: APIContext): Promise<Response> {
   const code = context.url.searchParams.get("code");
