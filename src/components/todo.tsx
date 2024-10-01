@@ -73,19 +73,11 @@ const TodoItem: React.FC<{ todo: TodoSelect }> = (props) => {
   const { todo } = props;
   const { deleteTodo, updateTodo } = useMutations();
 
-  const { setNodeRef, node, attributes, listeners, transform } = useDraggable({
-    id: todo.id,
-  });
-
-  const style = transform
-    ? {
-        transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
-      }
-    : undefined;
-
   const [editorOpen, setEditorOpen] = React.useState(false);
 
-  useOnClickOutside(node, () => {
+  const ref = React.useRef<HTMLDivElement>(null);
+
+  useOnClickOutside(ref, () => {
     if (editorOpen) {
       setEditorOpen(false);
     }
@@ -103,7 +95,7 @@ const TodoItem: React.FC<{ todo: TodoSelect }> = (props) => {
 
   return (
     <div
-      ref={setNodeRef}
+      ref={ref}
       className={cn(
         "flex h-10 items-center gap-2 rounded-md px-3 text-sm transition-colors ease-out hover:bg-muted/20",
         todo.isCompleted && "opacity-50",

@@ -3,6 +3,11 @@ import type React from "react";
 import TodoItem from "./todo";
 import { Skeleton } from "./ui/skeleton";
 import useTodosQuery from "@/hooks/use-current-todos";
+import Draggable from "./draggable";
+import { createPortal } from "react-dom";
+import { DragOverlay } from "@dnd-kit/core";
+import { useAtomValue } from "jotai";
+import { draggingTodoAtom } from "@/lib/store";
 
 const ListHeader: React.FC<React.PropsWithChildren> = ({ children }) => {
   return (
@@ -13,6 +18,8 @@ const ListHeader: React.FC<React.PropsWithChildren> = ({ children }) => {
 const TodoList: React.FC = () => {
   const todosQuery = useTodosQuery();
   const todos = todosQuery.data ?? [];
+
+  const draggingTodo = useAtomValue(draggingTodoAtom);
 
   if (todosQuery.isLoading) {
     return (
@@ -49,8 +56,17 @@ const TodoList: React.FC = () => {
         <div className="grid gap-2">
           <ListHeader>Next</ListHeader>
           {inCompleteTodos.map((todo) => (
-            <TodoItem key={todo.id} todo={todo} />
+            <Draggable id={todo.id} key={todo.id}>
+              <TodoItem todo={todo} />
+            </Draggable>
           ))}
+          {
+            <DragOverlay>
+              {draggingTodo && (
+                <TodoItem todo={draggingTodo} key={draggingTodo.id} />
+              )}
+            </DragOverlay>
+          }
         </div>
       )}
       {completedTodos.length > 0 && (
