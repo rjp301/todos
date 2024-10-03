@@ -13,14 +13,7 @@ import Header from "@/components/header";
 import useQueryStream from "@/hooks/use-query-stream";
 import ListEdit from "./list-edit-page";
 import ListCreate from "./list-create-page";
-import {
-  DndContext,
-  KeyboardSensor,
-  MouseSensor,
-  TouchSensor,
-  useSensor,
-  useSensors,
-} from "@dnd-kit/core";
+import DragAndDropWrapper from "@/components/drag-and-drop-wrapper";
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 1000 * 60 * 5 } },
@@ -73,20 +66,14 @@ const router = createBrowserRouter([
 const App: React.FC = () => {
   useQueryStream(queryClient);
 
-  const mouseSensor = useSensor(MouseSensor);
-  const touchSensor = useSensor(TouchSensor);
-  const keyboardSensor = useSensor(KeyboardSensor);
-
-  const sensors = useSensors(mouseSensor, touchSensor, keyboardSensor);
-
   return (
     <QueryClientProvider client={queryClient}>
-      <DndContext sensors={sensors}>
+      <DragAndDropWrapper>
         <TooltipProvider>
           <RouterProvider router={router} />
           <Toaster />
         </TooltipProvider>
-      </DndContext>
+      </DragAndDropWrapper>
     </QueryClientProvider>
   );
 };

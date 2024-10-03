@@ -15,6 +15,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Checkbox } from "./ui/checkbox";
+import { DRAGGING_TYPES } from "@/lib/constants";
 
 interface Props {
   todo: TodoSelect;
@@ -28,6 +29,7 @@ const TodoItem: React.FC<Props> = (props) => {
 
   const { attributes, listeners, setNodeRef, node, transform } = useDraggable({
     id: todo.id,
+    data: { type: DRAGGING_TYPES.Todo, data: todo },
   });
 
   useOnClickOutside(node, () => {
