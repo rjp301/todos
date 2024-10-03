@@ -10,6 +10,8 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Link2 } from "lucide-react";
+import { useDroppable } from "@dnd-kit/core";
+import { cn } from "@/lib/utils";
 
 type ListProps = React.PropsWithChildren<{
   link: string;
@@ -34,14 +36,21 @@ const ListPill: React.FC<ListProps> = (props) => {
     { isPreventDefault: true },
   );
 
+  const { setNodeRef, isOver } = useDroppable({
+    id: link,
+  });
+
   return (
-    <NavLink to={link} {...longPress}>
-      <Badge variant={isActive ? "default" : "secondary"} className="h-6">
+    <NavLink ref={setNodeRef} to={link} {...longPress}>
+      <Badge
+        variant={isActive ? "default" : "secondary"}
+        className={cn("h-6", isOver && "outline")}
+      >
         {children}
         {isShared && (
           <Tooltip>
             <TooltipTrigger>
-              <Link2 className="size-4 ml-2" />
+              <Link2 className="ml-2 size-4" />
             </TooltipTrigger>
             {listAdmin && (
               <TooltipContent>Shared by {listAdmin.name}</TooltipContent>

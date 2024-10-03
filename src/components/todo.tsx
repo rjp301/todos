@@ -7,6 +7,8 @@ import type { TodoSelect } from "@/lib/types";
 import TodoEditor from "./todo-editor";
 import { useEventListener, useOnClickOutside } from "usehooks-ts";
 
+import { useDraggable } from "@dnd-kit/core";
+
 import {
   Tooltip,
   TooltipContent,
@@ -24,9 +26,11 @@ const TodoItem: React.FC<Props> = (props) => {
 
   const [editorOpen, setEditorOpen] = React.useState(false);
 
-  const ref = React.useRef<HTMLDivElement>(null);
+  const { attributes, listeners, setNodeRef, node, transform } = useDraggable({
+    id: todo.id,
+  });
 
-  useOnClickOutside(ref, () => {
+  useOnClickOutside(node, () => {
     if (editorOpen) {
       setEditorOpen(false);
     }
@@ -44,12 +48,19 @@ const TodoItem: React.FC<Props> = (props) => {
 
   return (
     <div
-      ref={ref}
+      ref={setNodeRef}
       className={cn(
         "flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors ease-out hover:bg-muted/20",
         todo.isCompleted && "opacity-50",
         deleteTodo.isPending && "opacity-50",
       )}
+      {...attributes}
+      {...listeners}
+      style={{
+        transform: transform
+          ? `translate3d(${transform.x}px, ${transform.y}px, 0)`
+          : undefined,
+      }}
     >
       {editorOpen ? (
         <TodoEditor todo={todo} onSubmit={() => setEditorOpen(false)} />
