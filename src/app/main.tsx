@@ -28,14 +28,14 @@ const router = createBrowserRouter([
   {
     path: "/",
     element: (
-      <>
+      <DragAndDropWrapper>
         <Header />
         <main className="container2">
           <div className="pb-28 pt-6">
             <Outlet />
           </div>
         </main>
-      </>
+      </DragAndDropWrapper>
     ),
     errorElement: <ErrorPage showGoHome />,
     children: [
@@ -68,12 +68,10 @@ const App: React.FC = () => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <DragAndDropWrapper>
-        <TooltipProvider>
-          <RouterProvider router={router} />
-          <Toaster />
-        </TooltipProvider>
-      </DragAndDropWrapper>
+      <TooltipProvider>
+        <RouterProvider router={router} />
+        <Toaster />
+      </TooltipProvider>
     </QueryClientProvider>
   );
 };

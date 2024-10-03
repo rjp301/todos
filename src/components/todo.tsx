@@ -1,7 +1,7 @@
 import React from "react";
 import { cn } from "@/lib/utils";
 import DeleteButton from "./ui/delete-button";
-import { Link2 } from "lucide-react";
+import { GripVertical, Link2 } from "lucide-react";
 import useMutations from "@/hooks/use-mutations";
 import type { TodoSelect } from "@/lib/types";
 import TodoEditor from "./todo-editor";
@@ -15,7 +15,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Checkbox } from "./ui/checkbox";
-import { DRAGGING_TYPES } from "@/lib/constants";
+import { DRAG_TYPES } from "@/lib/constants";
 
 interface Props {
   todo: TodoSelect;
@@ -27,9 +27,9 @@ const TodoItem: React.FC<Props> = (props) => {
 
   const [editorOpen, setEditorOpen] = React.useState(false);
 
-  const { attributes, listeners, setNodeRef, node, transform } = useDraggable({
+  const { attributes, listeners, setNodeRef, node, isDragging } = useDraggable({
     id: todo.id,
-    data: { type: DRAGGING_TYPES.Todo, data: todo },
+    data: { type: DRAG_TYPES.Todo, data: todo },
   });
 
   useOnClickOutside(node, () => {
@@ -55,15 +55,17 @@ const TodoItem: React.FC<Props> = (props) => {
         "flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors ease-out hover:bg-muted/20",
         todo.isCompleted && "opacity-50",
         deleteTodo.isPending && "opacity-50",
+        isDragging && "opacity-50",
       )}
-      {...attributes}
-      {...listeners}
-      style={{
-        transform: transform
-          ? `translate3d(${transform.x}px, ${transform.y}px, 0)`
-          : undefined,
-      }}
     >
+      <div {...attributes} {...listeners}>
+        <GripVertical
+          className={cn(
+            "size-4 cursor-grab text-muted-foreground",
+            isDragging && "cursor-grabbing",
+          )}
+        />
+      </div>
       {editorOpen ? (
         <TodoEditor todo={todo} onSubmit={() => setEditorOpen(false)} />
       ) : (
