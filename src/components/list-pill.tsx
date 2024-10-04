@@ -12,6 +12,7 @@ import {
 import { Link2 } from "lucide-react";
 import { useDroppable } from "@dnd-kit/core";
 import { cn } from "@/lib/utils";
+import { DRAG_TYPES } from "@/lib/constants";
 
 type ListProps = React.PropsWithChildren<{
   link: string;
@@ -19,10 +20,11 @@ type ListProps = React.PropsWithChildren<{
   isShared?: boolean;
   isAdmin?: boolean;
   listAdmin?: UserSelect | null;
+  listId: string | null | undefined;
 }>;
 
 const ListPill: React.FC<ListProps> = (props) => {
-  const { children, link, linkLongPress, isShared, listAdmin } = props;
+  const { children, link, linkLongPress, isShared, listAdmin, listId } = props;
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const isActive = pathname === link;
@@ -38,6 +40,8 @@ const ListPill: React.FC<ListProps> = (props) => {
 
   const { setNodeRef, isOver } = useDroppable({
     id: link,
+    data: { type: DRAG_TYPES.List, listId },
+    disabled: listId === undefined,
   });
 
   return (

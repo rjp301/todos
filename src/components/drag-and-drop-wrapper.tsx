@@ -10,11 +10,13 @@ import {
   closestCenter,
   pointerWithin,
   type CollisionDetection,
+  type DragEndEvent,
 } from "@dnd-kit/core";
 import React from "react";
 import { useAtom } from "jotai";
 import { draggingTodoAtom } from "@/lib/store";
 import { DRAG_TYPES } from "@/lib/constants";
+import useMutations from "@/hooks/use-mutations";
 
 const customCollisionDetectionAlgorithm: CollisionDetection = (args) => {
   const pointerCollisions = pointerWithin(args);
@@ -33,6 +35,8 @@ const DragAndDropWrapper: React.FC<React.PropsWithChildren> = ({
 
   const [draggingTodo, setDraggingTodo] = useAtom(draggingTodoAtom);
 
+  const { updateTodo } = useMutations();
+
   const handleDragStart = (event: DragStartEvent) => {
     const activeData = event.active.data.current;
     if (!activeData) return;
@@ -42,9 +46,32 @@ const DragAndDropWrapper: React.FC<React.PropsWithChildren> = ({
     }
   };
 
+  const handleDragEnd = (event: DragEndEvent) => {
+    const overData = event.over?.data.current;
+    const activeData = event.active.data.current;
+
+    if (!activeData || !overData) return;
+
+    if (
+      activeData.type === DRAG_TYPES.Todo &&
+      overData.type === DRAG_TYPES.List
+    ) {
+      console.log("activeData", activeData);
+      console.log("overData", overData);
+
+      updateTodo.mutate({
+        id: activeData.data.id,
+        data: { listId: overData.listId },
+      });
+
+      setDraggingTodo(null);
+    }
+  };
+
   return (
     <DndContext
       onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
       sensors={sensors}
       collisionDetection={customCollisionDetectionAlgorithm}
     >

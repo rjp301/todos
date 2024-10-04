@@ -4,6 +4,12 @@ import TodoItem from "./todo";
 import { Skeleton } from "./ui/skeleton";
 import useTodosQuery from "@/hooks/use-current-todos";
 
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import QueryGuard from "./base/query-guard";
+
 const ListHeader: React.FC<React.PropsWithChildren> = ({ children }) => {
   return (
     <h2 className="px-3 text-sm font-bold text-muted-foreground">{children}</h2>
@@ -44,24 +50,33 @@ const TodoList: React.FC = () => {
   const completedTodos = todos.filter((todo) => todo.isCompleted);
 
   return (
-    <div className="flex flex-col gap-5">
-      {inCompleteTodos.length > 0 && (
-        <div className="grid gap-2">
-          <ListHeader>Next</ListHeader>
-          {inCompleteTodos.map((todo) => (
-            <TodoItem key={todo.id} todo={todo} />
-          ))}
+    <QueryGuard query={todosQuery}>
+      {(todos) => (
+        <div className="flex flex-col gap-5">
+          {inCompleteTodos.length > 0 && (
+            <SortableContext
+              items={inCompleteTodos}
+              strategy={verticalListSortingStrategy}
+            >
+              <div className="grid gap-2">
+                <ListHeader>Next</ListHeader>
+                {inCompleteTodos.map((todo, index) => (
+                  <TodoItem key={todo.id} todo={todo} index={index} />
+                ))}
+              </div>
+            </SortableContext>
+          )}
+          {completedTodos.length > 0 && (
+            <div className="grid gap-2">
+              <ListHeader>Completed</ListHeader>
+              {completedTodos.map((todo) => (
+                <TodoItem key={todo.id} todo={todo} />
+              ))}
+            </div>
+          )}
         </div>
       )}
-      {completedTodos.length > 0 && (
-        <div className="grid gap-2">
-          <ListHeader>Completed</ListHeader>
-          {completedTodos.map((todo) => (
-            <TodoItem key={todo.id} todo={todo} />
-          ))}
-        </div>
-      )}
-    </div>
+    </QueryGuard>
   );
 };
 

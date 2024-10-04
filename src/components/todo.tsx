@@ -7,8 +7,6 @@ import type { TodoSelect } from "@/lib/types";
 import TodoEditor from "./todo-editor";
 import { useEventListener, useOnClickOutside } from "usehooks-ts";
 
-import { useDraggable } from "@dnd-kit/core";
-
 import {
   Tooltip,
   TooltipContent,
@@ -16,20 +14,22 @@ import {
 } from "@/components/ui/tooltip";
 import { Checkbox } from "./ui/checkbox";
 import { DRAG_TYPES } from "@/lib/constants";
+import { useSortable } from "@dnd-kit/sortable";
 
 interface Props {
   todo: TodoSelect;
+  index?: number;
 }
 
 const TodoItem: React.FC<Props> = (props) => {
-  const { todo } = props;
+  const { todo, index } = props;
   const { deleteTodo, updateTodo } = useMutations();
 
   const [editorOpen, setEditorOpen] = React.useState(false);
 
-  const { attributes, listeners, setNodeRef, node, isDragging } = useDraggable({
+  const { attributes, listeners, setNodeRef, node, isDragging } = useSortable({
     id: todo.id,
-    data: { type: DRAG_TYPES.Todo, data: todo },
+    data: { type: DRAG_TYPES.Todo, data: todo, index },
   });
 
   useOnClickOutside(node, () => {

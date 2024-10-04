@@ -1,4 +1,4 @@
-import { defineAction } from "astro:actions";
+import { ActionError, defineAction } from "astro:actions";
 import {
   filterTodoBySharedTag,
   getUsersOfTodo,
@@ -77,11 +77,28 @@ export const updateTodo = defineAction({
   handler: async ({ id, data }, c) => {
     const userId = isAuthorized(c).id;
 
-    const sharedTagFilter = await filterTodoBySharedTag(userId);
+    const existingTodo = await db
+      .select()
+      .from(Todo)
+      .leftJoin(ListShare, eq(ListShare.listId, Todo.listId))
+      .where(
+        and(
+          eq(Todo.id, id),
+          or(eq(Todo.userId, userId), eq(ListShare.sharedUserId, userId)),
+        ),
+      );
+
+    if (existingTodo.length === 0) {
+      throw new ActionError({
+        message: "Todo not found",
+        code: "NOT_FOUND",
+      });
+    }
+
     const todo = await db
       .update(Todo)
       .set({ ...data, userId })
-      .where(and(eq(Todo.id, id), or(eq(Todo.userId, userId), sharedTagFilter)))
+      .where(eq(Todo.id, id))
       .returning()
       .then((rows) => rows[0]);
 

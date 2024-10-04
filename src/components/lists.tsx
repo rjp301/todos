@@ -10,8 +10,12 @@ const Lists: React.FC = () => {
 
   return (
     <div className="flex flex-wrap items-center gap-1.5 px-3">
-      <ListPill link="/">Inbox</ListPill>
-      <ListPill link="/all">All</ListPill>
+      <ListPill link="/" listId={null}>
+        Inbox
+      </ListPill>
+      <ListPill link="/all" listId={null}>
+        All
+      </ListPill>
       <Separator orientation="vertical" className="h-6" />
       {lists.map((list) => (
         <ListPill
@@ -21,11 +25,12 @@ const Lists: React.FC = () => {
           isShared={list.isShared}
           isAdmin={list.isAdmin}
           listAdmin={list.listAdmin}
+          listId={list.id}
         >
           {list.name}
         </ListPill>
       ))}
-      <ListPill link="/list/new">
+      <ListPill link="/list/new" listId={undefined}>
         <i className="fa-solid fa-plus" />
       </ListPill>
     </div>
