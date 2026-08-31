@@ -23,7 +23,7 @@ export default function useTodoMutations() {
 
   const createTodoMutation = useMutation(CreateTodoDocument, {
     optimisticResponse: ({ input: { text, listId } }, { IGNORE }) => {
-      const existingList = readListFromCache(client.cache, listId as string);
+      const existingList = readListFromCache(client.cache, listId);
       if (!existingList) return IGNORE;
 
       return {
@@ -55,8 +55,8 @@ export default function useTodoMutations() {
       deleteTodo: true,
     },
     update: (cache, { data }, { variables: { todoId } = {} }) => {
-      if (!data?.deleteTodo) return;
-      const todo = readTodoFromCache(cache, todoId as string);
+      if (!data?.deleteTodo || !todoId) return;
+      const todo = readTodoFromCache(cache, todoId);
       const listCacheId = cache.identify({
         __typename: "ListObjectType",
         id: todo?.list.id,
@@ -79,7 +79,7 @@ export default function useTodoMutations() {
     DeleteCompletedTodosDocument,
     {
       optimisticResponse: ({ listId }, { IGNORE }) => {
-        const existingList = readListFromCache(client.cache, listId as string);
+        const existingList = readListFromCache(client.cache, listId);
         if (!existingList) return IGNORE;
 
         return {
@@ -97,7 +97,7 @@ export default function useTodoMutations() {
     UncheckCompletedTodosDocument,
     {
       optimisticResponse: ({ listId }, { IGNORE }) => {
-        const existingList = readListFromCache(client.cache, listId as string);
+        const existingList = readListFromCache(client.cache, listId);
         if (!existingList) return IGNORE;
 
         return {

@@ -1,27 +1,14 @@
 import { alertSystemAtom } from "@/app/components/alert-system/alert-system.store";
 import { zListName } from "@/lib/types";
 import { useAtom } from "jotai";
-import { CreateListDocument, GetListsForChipsDocument } from "@/app/gql.gen";
-import { useNavigate, useRouter } from "@tanstack/react-router";
-import { useMutation } from "@apollo/client/react";
+import useListMutations from "../mutations/use-list-mutations";
 
 export default function useCreateList() {
-  const navigate = useNavigate();
-  const router = useRouter();
-
   const [, dispatchAlert] = useAtom(alertSystemAtom);
 
-  const [createList] = useMutation(CreateListDocument, {
-    refetchQueries: [GetListsForChipsDocument],
-    onCompleted: ({ createList }) => {
-      if (!createList) return;
-      router.invalidate();
-      navigate({
-        to: "/todos/$listId",
-        params: { listId: createList.id },
-      });
-    },
-  });
+  const {
+    createListMutation: [createList],
+  } = useListMutations();
 
   const handleCreateList = () => {
     dispatchAlert({

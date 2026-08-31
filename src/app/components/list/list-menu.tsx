@@ -18,17 +18,11 @@ import { alertSystemAtom } from "../alert-system/alert-system.store";
 import type { MenuItem } from "../ui/menu/menu.types";
 import { IconButton } from "@radix-ui/themes";
 import { getListUrl } from "@/lib/constants";
-import {
-  DeleteListDocument,
-  UpdateListDocument,
-  type ShallowListFragment,
-} from "@/app/gql.gen";
-import { useParams, useRouter } from "@tanstack/react-router";
+import { type ShallowListFragment } from "@/app/gql.gen";
 import useManageListUsers from "@/app/hooks/actions/use-manage-list-users";
 import useNumCompletedTodos from "@/app/hooks/actions/use-num-completed-todos";
-import { useApolloClient, useMutation } from "@apollo/client/react";
-import { readListFromCache } from "@/app/graphql/utils";
 import useTodoMutations from "@/app/hooks/mutations/use-todo-mutations";
+import useListMutations from "@/app/hooks/mutations/use-list-mutations";
 
 type Props = {
   list: ShallowListFragment;
@@ -40,24 +34,10 @@ const ListMenu: React.FC<Props> = ({ list }) => {
     uncheckCompletedTodosMutation: [uncheckCompletedTodos],
   } = useTodoMutations();
 
-  const { listId: currentList } = useParams({ strict: false });
-  const router = useRouter();
-  const { cache } = useApolloClient();
-
-  const [updateList] = useMutation(UpdateListDocument);
-
-  const [deleteList] = useMutation(DeleteListDocument, {
-    onCompleted: () => {
-      router.invalidate();
-      toast.success("List deleted successfully");
-      if (currentList === list.id) router.navigate({ to: "/" });
-    },
-    update: (cache) => {
-      const listCacheId = cache.identify(list);
-      cache.evict({ id: listCacheId });
-      cache.gc();
-    },
-  });
+  const {
+    updateListMutation: [updateList],
+    deleteListMutation: [deleteList],
+  } = useListMutations();
 
   const [, dispatchAlert] = useAtom(alertSystemAtom);
   const [, copyToClipboard] = useCopyToClipboard();
@@ -78,17 +58,7 @@ const ListMenu: React.FC<Props> = ({ list }) => {
         placeholder: "Enter new list name",
         schema: zListName,
         handleSubmit: (name: string) => {
-          updateList({
-            variables: { listId: list.id, input: { name } },
-            optimisticResponse: (_variables, { IGNORE }) => {
-              const existingList = readListFromCache(cache, list.id);
-              if (!existingList) return IGNORE;
-              return {
-                __typename: "Mutation",
-                updateList: { ...existingList, name },
-              };
-            },
-          });
+          updateList({ variables: { listId: list.id, input: { name } } });
           dispatchAlert({ type: "close" });
           toast.success("List renamed successfully");
         },
