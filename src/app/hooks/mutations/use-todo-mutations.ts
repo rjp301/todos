@@ -7,7 +7,11 @@ import {
   UpdateTodoDocument,
   type ListFullFragment,
 } from "@/app/gql.gen";
-import { readListFromCache, readTodoFromCache } from "@/app/graphql/utils";
+import {
+  readListFromCache,
+  readTodoFromCache,
+  removeNullish,
+} from "@/app/graphql/utils";
 import {
   useApolloClient,
   useMutation,
@@ -48,7 +52,20 @@ export default function useTodoMutations() {
     },
   });
 
-  const updateTodoMutation = useMutation(UpdateTodoDocument);
+  const updateTodoMutation = useMutation(UpdateTodoDocument, {
+    optimisticResponse: ({ todoId, input }, { IGNORE }) => {
+      const todo = readTodoFromCache(client.cache, todoId);
+      if (!todo) return IGNORE;
+
+      return {
+        __typename: "Mutation",
+        updateTodo: {
+          ...todo,
+          ...removeNullish(input),
+        },
+      };
+    },
+  });
 
   const deleteTodoMutation = useMutation(DeleteTodoDocument, {
     optimisticResponse: {

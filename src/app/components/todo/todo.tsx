@@ -99,13 +99,8 @@ const TodoCheckbox: React.FC<{ todo: TodoFragment }> = ({ todo }) => {
       onCheckedChange={(value) => {
         const isCompleted = Boolean(value);
         updateTodo({
-          variables: { input: { id: todo.id, isCompleted } },
-          optimisticResponse: {
-            updateTodo: {
-              ...todo,
-              isCompleted,
-            },
-          },
+          variables: { todoId: todo.id, input: { isCompleted } },
+          optimisticResponse: { updateTodo: { ...todo, isCompleted } },
           update: (cache) => {
             const listCacheId = cache.identify({
               __typename: "ListObjectType",
@@ -193,7 +188,7 @@ const Todo: React.FC<{ todo: TodoFragment }> = ({ todo }) => {
           initialValue={todo.text}
           handleSubmit={(text) => {
             updateTodo({
-              variables: { input: { id: todo.id, text } },
+              variables: { todoId: todo.id, input: { text } },
               optimisticResponse: { updateTodo: { ...todo, text } },
             });
             setEditingTodoId(null);

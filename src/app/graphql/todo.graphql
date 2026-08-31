@@ -14,8 +14,8 @@ mutation DeleteTodo($todoId: ID!) {
   deleteTodo(todoId: $todoId)
 }
 
-mutation UpdateTodo($input: UpdateTodoInput!) {
-  updateTodo(input: $input) {
+mutation UpdateTodo($todoId: ID!, $input: UpdateTodoInput!) {
+  updateTodo(todoId: $todoId, input: $input) {
     ...Todo
   }
 }

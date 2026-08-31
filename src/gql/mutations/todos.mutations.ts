@@ -14,7 +14,6 @@ const CreateTodoInput = builder.inputType("CreateTodoInput", {
 
 const UpdateTodoInput = builder.inputType("UpdateTodoInput", {
   fields: (t) => ({
-    id: t.id(),
     text: t.string({ required: false }),
     isCompleted: t.boolean({ required: false }),
     listId: t.id({ required: false }),
@@ -51,12 +50,15 @@ builder.mutationFields((t) => ({
 
   updateTodo: t.drizzleField({
     type: "Todo",
-    args: { input: t.arg({ type: UpdateTodoInput }) },
+    args: {
+      todoId: t.arg.id(),
+      input: t.arg({ type: UpdateTodoInput }),
+    },
     nullable: true,
-    resolve: async (query, _root, { input }, ctx) => {
+    resolve: async (query, _root, { todoId, input }, ctx) => {
       const db = createDb(ctx.env);
       const todo = await db.query.Todo.findFirst({
-        where: { id: { eq: input.id } },
+        where: { id: { eq: todoId } },
       });
       if (!todo) throw new Error("Todo not found");
 
@@ -75,13 +77,11 @@ builder.mutationFields((t) => ({
           isCompleted: input.isCompleted ?? undefined,
           listId: input.listId ?? undefined,
         })
-        .where(eq(tables.Todo.id, input.id))
+        .where(eq(tables.Todo.id, todoId))
         .returning();
 
       await notifyOtherListUsers(ctx, [updatedTodo.listId, todo.listId]);
-      return db.query.Todo.findFirst(
-        query({ where: { id: { eq: input.id } } }),
-      );
+      return db.query.Todo.findFirst(query({ where: { id: { eq: todoId } } }));
     },
   }),
 
