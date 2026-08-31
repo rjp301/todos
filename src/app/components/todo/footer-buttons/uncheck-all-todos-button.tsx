@@ -1,5 +1,5 @@
 import useNumCompletedTodos from "@/app/hooks/actions/use-num-completed-todos";
-import useUncheckCompletedTodos from "@/app/hooks/actions/use-uncheck-completed-todos";
+import useTodoMutations from "@/app/hooks/mutations/use-todo-mutations";
 import { Button } from "@radix-ui/themes";
 import { SquareMinusIcon } from "lucide-react";
 import React from "react";
@@ -9,7 +9,9 @@ type Props = { listId: string };
 
 const UncheckAllTodosButton: React.FC<Props> = ({ listId }) => {
   const numCompleted = useNumCompletedTodos(listId);
-  const [uncheckCompletedTodos] = useUncheckCompletedTodos(listId);
+  const {
+    uncheckCompletedTodosMutation: [uncheckCompletedTodos],
+  } = useTodoMutations();
 
   return (
     <Button

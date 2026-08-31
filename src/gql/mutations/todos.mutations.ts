@@ -12,12 +12,6 @@ const CreateTodoInput = builder.inputType("CreateTodoInput", {
   }),
 });
 
-const DeleteTodoInput = builder.inputType("DeleteTodoInput", {
-  fields: (t) => ({
-    id: t.id(),
-  }),
-});
-
 const UpdateTodoInput = builder.inputType("UpdateTodoInput", {
   fields: (t) => ({
     id: t.id(),
@@ -92,12 +86,12 @@ builder.mutationFields((t) => ({
   }),
 
   deleteTodo: t.boolean({
-    args: { input: t.arg({ type: DeleteTodoInput }) },
+    args: { todoId: t.arg.id() },
     nullable: true,
-    resolve: async (_root, { input }, ctx) => {
+    resolve: async (_root, { todoId }, ctx) => {
       const db = createDb(ctx.env);
       const todo = await db.query.Todo.findFirst({
-        where: { id: { eq: input.id } },
+        where: { id: { eq: todoId } },
       });
       if (!todo) throw new Error("Todo not found");
 
@@ -107,7 +101,7 @@ builder.mutationFields((t) => ({
       }
 
       await notifyOtherListUsers(ctx, todo.listId);
-      await db.delete(tables.Todo).where(eq(tables.Todo.id, input.id));
+      await db.delete(tables.Todo).where(eq(tables.Todo.id, todoId));
       return true;
     },
   }),

@@ -26,18 +26,19 @@ import {
 import { useParams, useRouter } from "@tanstack/react-router";
 import useManageListUsers from "@/app/hooks/actions/use-manage-list-users";
 import useNumCompletedTodos from "@/app/hooks/actions/use-num-completed-todos";
-import useDeleteCompletedTodos from "@/app/hooks/actions/use-delete-completed-todos";
-import useUncheckCompletedTodos from "@/app/hooks/actions/use-uncheck-completed-todos";
 import { useApolloClient, useMutation } from "@apollo/client/react";
 import { readListFromCache } from "@/app/graphql/utils";
+import useTodoMutations from "@/app/hooks/mutations/use-todo-mutations";
 
 type Props = {
   list: ShallowListFragment;
 };
 
 const ListMenu: React.FC<Props> = ({ list }) => {
-  const [deleteCompletedTodos] = useDeleteCompletedTodos(list.id);
-  const [uncheckCompletedTodos] = useUncheckCompletedTodos(list.id);
+  const {
+    deleteCompletedTodosMutation: [deleteCompletedTodos],
+    uncheckCompletedTodosMutation: [uncheckCompletedTodos],
+  } = useTodoMutations();
 
   const { listId: currentList } = useParams({ strict: false });
   const router = useRouter();

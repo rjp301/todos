@@ -10,8 +10,8 @@ mutation CreateTodo($input: CreateTodoInput!) {
   }
 }
 
-mutation DeleteTodo($input: DeleteTodoInput!) {
-  deleteTodo(input: $input)
+mutation DeleteTodo($todoId: ID!) {
+  deleteTodo(todoId: $todoId)
 }
 
 mutation UpdateTodo($input: UpdateTodoInput!) {

@@ -10,7 +10,7 @@ import { mergeRefs } from "@/app/lib/utils";
 import { PlusIcon } from "lucide-react";
 import { useHotkey } from "@tanstack/react-hotkeys";
 import { type ListFullFragment } from "@/app/gql.gen";
-import useCreateTodo from "../hooks/actions/use-create-todo";
+import useTodoMutations from "../hooks/mutations/use-todo-mutations";
 
 const schema = z.object({
   text: z.string().nonempty("Todo text cannot be empty"),
@@ -18,7 +18,9 @@ const schema = z.object({
 type Schema = z.infer<typeof schema>;
 
 const TodoAdder: React.FC<{ list: ListFullFragment }> = ({ list }) => {
-  const [createTodo, { loading }] = useCreateTodo(list.id);
+  const {
+    createTodoMutation: [createTodo, { loading }],
+  } = useTodoMutations();
 
   const { control, handleSubmit, reset } = useForm<Schema>({
     resolver: zodResolver(schema),

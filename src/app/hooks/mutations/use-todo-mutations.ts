@@ -7,7 +7,7 @@ import {
   UpdateTodoDocument,
   type ListFullFragment,
 } from "@/app/gql.gen";
-import { readListFromCache } from "@/app/graphql/utils";
+import { readListFromCache, readTodoFromCache } from "@/app/graphql/utils";
 import {
   useApolloClient,
   useMutation,
@@ -54,12 +54,12 @@ export default function useTodoMutations() {
     optimisticResponse: {
       deleteTodo: true,
     },
-    update: (cache, { data }) => {
+    update: (cache, { data }, { variables: { todoId } = {} }) => {
       if (!data?.deleteTodo) return;
-
+      const todo = readTodoFromCache(cache, todoId as string);
       const listCacheId = cache.identify({
         __typename: "ListObjectType",
-        id: listId,
+        id: todo?.list.id,
       });
       cache.modify<ListFullFragment>({
         id: listCacheId,

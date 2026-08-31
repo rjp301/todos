@@ -11,77 +11,17 @@ import { useAtom } from "jotai";
 import type { MenuItem } from "../ui/menu/menu.types";
 import { editingTodoIdAtom } from "./todos.store";
 import ResponsiveMenu from "../ui/menu/responsive-menu";
-import {
-  DeleteTodoDocument,
-  GetListsForChipsDocument,
-  UpdateTodoDocument,
-  type ListFullFragment,
-} from "@/app/gql.gen";
-import { useMutation, useSuspenseQuery } from "@apollo/client/react";
+import { GetListsForChipsDocument, type ListFullFragment } from "@/app/gql.gen";
+import { useSuspenseQuery } from "@apollo/client/react";
+import useTodoMutations from "@/app/hooks/mutations/use-todo-mutations";
 
 const TodoMenu: React.FC<{ todoId: string }> = ({ todoId }) => {
   const { listId } = useParams({ strict: false });
 
-  const [deleteTodo] = useMutation(DeleteTodoDocument, {
-    optimisticResponse: {
-      deleteTodo: true,
-    },
-    update: (cache, { data }) => {
-      if (!data?.deleteTodo) return;
-
-      const listCacheId = cache.identify({
-        __typename: "ListObjectType",
-        id: listId,
-      });
-      cache.modify<ListFullFragment>({
-        id: listCacheId,
-        fields: {
-          todoCount: (count) => count - 1,
-          todos: (existingTodoRefs = [], { readField }) => {
-            return existingTodoRefs.filter(
-              (ref) => readField("id", ref) !== todoId,
-            );
-          },
-        },
-      });
-    },
-  });
-
-  const [moveTodo] = useMutation(UpdateTodoDocument, {
-    update: (cache, { data }, { variables }) => {
-      if (!data?.updateTodo) return;
-
-      const oldListCacheId = cache.identify({
-        __typename: "ListObjectType",
-        id: listId,
-      });
-      cache.modify<ListFullFragment>({
-        id: oldListCacheId,
-        fields: {
-          todoCount: (count) => count - 1,
-          todos: (existingTodoRefs, { readField }) => {
-            return existingTodoRefs.filter(
-              (ref) => readField("id", ref) !== todoId,
-            );
-          },
-        },
-      });
-      const newListCacheId = cache.identify({
-        __typename: "ListObjectType",
-        id: variables?.input.listId,
-      });
-      cache.modify<ListFullFragment>({
-        id: newListCacheId,
-        fields: {
-          todoCount: (count) => count + 1,
-        },
-      });
-      cache.evict({
-        id: newListCacheId,
-        fieldName: "todos",
-      });
-    },
-  });
+  const {
+    deleteTodoMutation: [deleteTodo],
+    updateTodoMutation: [updateTodo],
+  } = useTodoMutations();
 
   const {
     data: { lists = [] },
@@ -90,11 +30,46 @@ const TodoMenu: React.FC<{ todoId: string }> = ({ todoId }) => {
   const [_, setEditingTodoId] = useAtom(editingTodoIdAtom);
 
   const handleMove = (targetListId: string) => {
-    moveTodo({ variables: { input: { id: todoId, listId: targetListId } } });
+    updateTodo({
+      variables: { input: { id: todoId, listId: targetListId } },
+      update: (cache, { data }, { variables }) => {
+        if (!data?.updateTodo) return;
+
+        const oldListCacheId = cache.identify({
+          __typename: "ListObjectType",
+          id: listId,
+        });
+        cache.modify<ListFullFragment>({
+          id: oldListCacheId,
+          fields: {
+            todoCount: (count) => count - 1,
+            todos: (existingTodoRefs, { readField }) => {
+              return existingTodoRefs.filter(
+                (ref) => readField("id", ref) !== todoId,
+              );
+            },
+          },
+        });
+        const newListCacheId = cache.identify({
+          __typename: "ListObjectType",
+          id: variables?.input.listId,
+        });
+        cache.modify<ListFullFragment>({
+          id: newListCacheId,
+          fields: {
+            todoCount: (count) => count + 1,
+          },
+        });
+        cache.evict({
+          id: newListCacheId,
+          fieldName: "todos",
+        });
+      },
+    });
   };
 
   const handleDelete = () => {
-    deleteTodo({ variables: { input: { id: todoId } } });
+    deleteTodo({ variables: { todoId } });
   };
 
   const handleEdit = () => {
