@@ -23,9 +23,10 @@ import { useAtom } from "jotai";
 import { editingTodoIdAtom } from "./todos.store";
 import { SaveIcon } from "lucide-react";
 import { useHotkey } from "@tanstack/react-hotkeys";
-import { UpdateTodoDocument, type TodoFragment } from "@/app/gql.gen";
+import { type TodoFragment } from "@/app/gql.gen";
 import { useUser } from "@/app/providers/user-provider";
-import { useMutation } from "@apollo/client/react";
+
+import useTodoMutations from "@/app/hooks/mutations/use-todo-mutations";
 
 const TodoForm: React.FC<{
   initialValue: string;
@@ -87,7 +88,9 @@ const TodoForm: React.FC<{
 };
 
 const TodoCheckbox: React.FC<{ todo: TodoFragment }> = ({ todo }) => {
-  const [updateTodo] = useMutation(UpdateTodoDocument);
+  const {
+    updateTodoMutation: [updateTodo],
+  } = useTodoMutations();
   return (
     <Checkbox
       size="3"
@@ -143,7 +146,9 @@ const TodoAuthorBubble: React.FC<{ todo: TodoFragment }> = ({ todo }) => {
 };
 
 const Todo: React.FC<{ todo: TodoFragment }> = ({ todo }) => {
-  const [updateTodo] = useMutation(UpdateTodoDocument);
+  const {
+    updateTodoMutation: [updateTodo],
+  } = useTodoMutations();
 
   const navigate = useNavigate();
 
