@@ -1,0 +1,47 @@
+fragment User on UserObjectType {
+  id
+  name
+  email
+  avatarUrl
+}
+
+fragment ListUser on ListUserObjectType {
+  id
+  isPending
+  user {
+    ...User
+  }
+}
+
+fragment ShallowList on ListObjectType {
+  id
+  name
+  todoCount
+  show
+  order
+  isPending
+  users {
+    ...ListUser
+  }
+}
+
+fragment ListFull on ListObjectType {
+  ...ShallowList
+  todos {
+    ...Todo
+  }
+}
+
+fragment Todo on TodoObjectType {
+  id
+  text
+  isCompleted
+  isAuthor
+  author {
+    ...User
+  }
+  list {
+    id
+    name
+  }
+}

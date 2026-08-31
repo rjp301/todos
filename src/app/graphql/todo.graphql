@@ -1,17 +1,3 @@
-fragment Todo on TodoObjectType {
-  id
-  text
-  isCompleted
-  isAuthor
-  author {
-    ...User
-  }
-  list {
-    id
-    name
-  }
-}
-
 query GetTodos($listId: ID) {
   todos(listId: $listId) {
     ...Todo

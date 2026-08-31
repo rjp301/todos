@@ -31,6 +31,16 @@ export type UpdateUserInput = {
   settingGroupCompleted: boolean;
 };
 
+export type UserFragment = { id: string, name: string, email: string, avatarUrl: string | null };
+
+export type ListUserFragment = { id: string, isPending: boolean, user: { id: string, name: string, email: string, avatarUrl: string | null } };
+
+export type ShallowListFragment = { id: string, name: string, todoCount: number, show: boolean, order: number, isPending: boolean, users: Array<{ id: string, isPending: boolean, user: { id: string, name: string, email: string, avatarUrl: string | null } }> };
+
+export type ListFullFragment = { id: string, name: string, todoCount: number, show: boolean, order: number, isPending: boolean, todos: Array<{ id: string, text: string, isCompleted: boolean, isAuthor: boolean, author: { id: string, name: string, email: string, avatarUrl: string | null }, list: { id: string, name: string } }>, users: Array<{ id: string, isPending: boolean, user: { id: string, name: string, email: string, avatarUrl: string | null } }> };
+
+export type TodoFragment = { id: string, text: string, isCompleted: boolean, isAuthor: boolean, author: { id: string, name: string, email: string, avatarUrl: string | null }, list: { id: string, name: string } };
+
 export type AcceptListInviteMutationVariables = Exact<{
   listId: string | number;
 }>;
@@ -59,12 +69,6 @@ export type RemoveUserFromListMutationVariables = Exact<{
 
 
 export type RemoveUserFromListMutation = { removeUserFromList: { id: string, name: string, todoCount: number, show: boolean, order: number, isPending: boolean, users: Array<{ id: string, isPending: boolean, user: { id: string, name: string, email: string, avatarUrl: string | null } }> } | null };
-
-export type ListUserFragment = { id: string, isPending: boolean, user: { id: string, name: string, email: string, avatarUrl: string | null } };
-
-export type ShallowListFragment = { id: string, name: string, todoCount: number, show: boolean, order: number, isPending: boolean, users: Array<{ id: string, isPending: boolean, user: { id: string, name: string, email: string, avatarUrl: string | null } }> };
-
-export type ListFullFragment = { id: string, name: string, todoCount: number, show: boolean, order: number, isPending: boolean, todos: Array<{ id: string, text: string, isCompleted: boolean, isAuthor: boolean, author: { id: string, name: string, email: string, avatarUrl: string | null }, list: { id: string, name: string } }>, users: Array<{ id: string, isPending: boolean, user: { id: string, name: string, email: string, avatarUrl: string | null } }> };
 
 export type GetListsForChipsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -107,8 +111,6 @@ export type UpdateListSortShowMutationVariables = Exact<{
 
 export type UpdateListSortShowMutation = { updateListSortShow: Array<{ id: string, name: string, todoCount: number, show: boolean, order: number, isPending: boolean, users: Array<{ id: string, isPending: boolean, user: { id: string, name: string, email: string, avatarUrl: string | null } }> }> };
 
-export type TodoFragment = { id: string, text: string, isCompleted: boolean, isAuthor: boolean, author: { id: string, name: string, email: string, avatarUrl: string | null }, list: { id: string, name: string } };
-
 export type GetTodosQueryVariables = Exact<{
   listId?: string | number | null | undefined;
 }>;
@@ -150,8 +152,6 @@ export type UncheckCompletedTodosMutationVariables = Exact<{
 
 
 export type UncheckCompletedTodosMutation = { uncheckCompletedTodos: { id: string, name: string, todoCount: number, show: boolean, order: number, isPending: boolean, todos: Array<{ id: string, text: string, isCompleted: boolean, isAuthor: boolean, author: { id: string, name: string, email: string, avatarUrl: string | null }, list: { id: string, name: string } }>, users: Array<{ id: string, isPending: boolean, user: { id: string, name: string, email: string, avatarUrl: string | null } }> } | null };
-
-export type UserFragment = { id: string, name: string, email: string, avatarUrl: string | null };
 
 export type GetMeQueryVariables = Exact<{ [key: string]: never; }>;
 
