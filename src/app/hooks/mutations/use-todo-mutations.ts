@@ -59,10 +59,7 @@ export default function useTodoMutations() {
 
       return {
         __typename: "Mutation",
-        updateTodo: {
-          ...todo,
-          ...removeNullish(input),
-        },
+        updateTodo: { ...todo, ...removeNullish(input) },
       };
     },
   });

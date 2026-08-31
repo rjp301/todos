@@ -31,7 +31,7 @@ const TodoMenu: React.FC<{ todoId: string }> = ({ todoId }) => {
 
   const handleMove = (targetListId: string) => {
     updateTodo({
-      variables: { input: { id: todoId, listId: targetListId } },
+      variables: { todoId, input: { listId: targetListId } },
       update: (cache, { data }, { variables }) => {
         if (!data?.updateTodo) return;
 
